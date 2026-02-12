@@ -1,13 +1,17 @@
-.switcher-label, .switcher-icon {
+.switcher-label,
+.switcher-icon {
   padding: .4em;
 }
 
 .switcher-box {
-  border-top: 2px solid #343a3a;
+  border-top: 2px solid rgba(54, 56, 58, 1);
 }
 
 .switcher-box:hover {
   background-color: rgba(54, 56, 58, 1);
+  border-top: 2px;
+  border-style: solid;
+  border-color: rgba(23, 25, 26, 0.95);
 }
 
 .switcher-box:last-child {
@@ -23,18 +27,27 @@
   margin-top: 100px;
 }
 
-.switcher-highlight {
+/* .switcher-highlight {
   color: #ffffff;
   background-color: #215d9c;
-}
+} */
 
-.switcher-highlight:hover {
+/* .switcher-highlight:hover {
   color: #ffffff;
   background-color: #447dbc;
-}
+} */
 
 .switcher-entry {
-  margin: .4em;
+  margin: 0px;
+  padding-left: .8em;
+  padding-right: .8em;
+  padding-top: 0.8em;
+  padding-bottom: 0.8em;
+  background-color: rgba(54, 56, 58, 0.95);
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: 0px;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .switcher-shortcut {

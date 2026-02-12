@@ -2,16 +2,16 @@
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 import * as Convenience from './convenience.js';
-import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import { ExtensionPreferences, gettext as _ } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 import * as OnboardingMessages from './onboardingmessages.js';
 const getOnboardingMessages = OnboardingMessages.messages;
 
 import Gdk from 'gi://Gdk';
 import Adw from 'gi://Adw';
 
-function buildPrefsWidget() {
+function buildPrefsWidget(uuid) {
   let provider = new Gtk.CssProvider();
-  const extension = ExtensionPreferences.lookupByUUID('switcher@landau.fi');
+  const extension = ExtensionPreferences.lookupByUUID(uuid);
   provider.load_from_path(extension.dir.get_path() + '/prefs.css');
   Gtk.StyleContext.add_provider_for_display(
     Gdk.Display.get_default(),
@@ -66,6 +66,14 @@ function buildWidgets() {
 
   let workspaceIndicatorWidget = new Gtk.Box();
   addWorkspaceIndicator(workspaceIndicatorWidget, settings);
+  let searchAllAppsWidget = new Gtk.Box();
+  addBoolean(
+    searchAllAppsWidget,
+    settings,
+    _('Search all apps'),
+    'search-all-apps'
+  );
+
 
   let onlyOneWorkSpaceWidget = new Gtk.Box();
   addOnlyOneWorkspace(onlyOneWorkSpaceWidget, settings);
@@ -96,6 +104,11 @@ function buildWidgets() {
 
   const onboardingWidgets = buildOnboarding(settings);
 
+
+
+  let replacementsWidget = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL });
+  addReplacements(replacementsWidget, settings);
+
   return [].concat(
     switcherShortcutWidget,
     changeExplanation,
@@ -105,14 +118,50 @@ function buildWidgets() {
     appearanceWidget,
     widthWidgets,
     workspaceIndicatorWidget,
+    searchAllAppsWidget,
     onlyOneWorkSpaceWidget,
     workspaceTip,
     fadeEffectWidget,
     activeDisplayWidget,
     showOriginalsWidget,
     showExecutablesWidget,
+    replacementsWidget, // Add here
     onboardingWidgets
   );
+}
+
+function addReplacements(widget, settings) {
+  widget.append(makeTitle(_('Window Replacements (App,NewName,Regex)')));
+
+  let frame = new Gtk.Frame();
+  let scrolled = new Gtk.ScrolledWindow({
+    hscrollbar_policy: Gtk.PolicyType.NEVER,
+    min_content_height: 150,
+    propagate_natural_height: true
+  });
+
+  let textView = new Gtk.TextView({
+    bottom_margin: 5,
+    left_margin: 5,
+    right_margin: 5,
+    top_margin: 5
+  });
+  let buffer = textView.get_buffer();
+
+  let currentVal = settings.get_strv('window-replacements');
+  buffer.set_text(currentVal.join('\n'), -1);
+
+  buffer.connect('changed', () => {
+    let [start, end] = buffer.get_bounds();
+    let text = buffer.get_text(start, end, false);
+    let lines = text.split('\n').filter(l => l.trim() !== '');
+    // Debounce? No, for prefs valid signals are fine usually.
+    settings.set_strv('window-replacements', lines);
+  });
+
+  scrolled.set_child(textView);
+  frame.set_child(scrolled);
+  widget.append(frame);
 }
 
 function addShortcut(widget, settings, shortcut, title) {
@@ -400,18 +449,18 @@ function makeTitle(markup) {
 
 export default class MyExtensionPreferences extends ExtensionPreferences {
   fillPreferencesWindow(window) {
-      window._settings = this.getSettings();
+    window._settings = this.getSettings();
 
-      const page = new Adw.PreferencesPage();
+    const page = new Adw.PreferencesPage();
 
-      const group = new Adw.PreferencesGroup({
-          title: _('Switcher Preferences'),
-      });
+    const group = new Adw.PreferencesGroup({
+      title: _('Switcher Preferences'),
+    });
 
-      const widget = buildPrefsWidget();
-      group.add(widget);
-      page.add(group);
-      window.add(page);
-      window.set_default_size(850, 900);
+    const widget = buildPrefsWidget(this.uuid);
+    group.add(widget);
+    page.add(group);
+    window.add(page);
+    window.set_default_size(850, 900);
   }
 }
