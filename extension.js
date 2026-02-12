@@ -27,14 +27,14 @@ import * as Convenience from './convenience.js';
 import * as KeyActivationModule from './keyActivation.js';
 
 import * as switcherModule from './modes/switcher.js';
-import {Launcher as launcher, initStats} from './modes/launcher.js';
+import { Launcher as launcher, initStats } from './modes/launcher.js';
 
 import * as ModeUtilsModule from './modes/modeUtils.js';
 
 import * as util from './util.js';
 import * as controlCenter from './controlCenter.js';
 
-import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const keyActivation = KeyActivationModule.KeyActivation;
 const switcher = switcherModule.Switcher;
@@ -103,6 +103,12 @@ function forceUpdateAppCacheCallback() {
 function _showUI() {
   'use strict';
   if (container) return;
+
+  const _windows = switcher.apps();
+  const _includeLauncher = Convenience.getSettings().get_boolean('search-all-apps');
+  if (!_includeLauncher && _windows.filter(w => switcher.filter(w.app)).length === 0) {
+    return;
+  }
   timeit('init');
   forceUpdateAppCacheTimeoutId = setTimeout(forceUpdateAppCacheCallback, APP_CACHE_TIMEOUT);
 
@@ -186,7 +192,7 @@ function _showUI() {
     tmpContainer.set_height(monitor.height);
     tmpContainer.set_position(monitor.x, monitor.y);
 
-    Main.uiGroup.add_actor(tmpContainer);
+    Main.uiGroup.add_child(tmpContainer);
     if (monitor === selectedMonitor) container = tmpContainer;
     return tmpContainer;
   });
@@ -196,7 +202,7 @@ function _showUI() {
   timeit('added actor');
 
   windows = switcher.apps();
-  if (windows.length >= 2) cursor = 1;
+  // if (windows.length >= 2) cursor = 1; // Current window is removed, so 0 is the previous window
   windowApps = new Set();
   windows.forEach((window) => {
     const app = Shell.WindowTracker.get_default().get_window_app(window.app);
@@ -205,8 +211,12 @@ function _showUI() {
   apps = windows;
   let filteredApps = windows;
 
+
+  let includeLauncher = Convenience.getSettings().get_boolean('search-all-apps');
+
   rerunFiltersAndUpdate = (o) => {
-    filteredApps = util.filterByText(apps, o.text);
+    const docSearch = includeLauncher ? apps : windows;
+    filteredApps = util.filterByText(docSearch, o.text);
     if (
       Convenience.getSettings().get_boolean('activate-immediately') &&
       filteredApps.length === 1
@@ -272,6 +282,9 @@ function _showUI() {
       let textCursor = entryText.get_cursor_position();
       if (textCursor == -1) textCursor = o.text.length;
       entryText.delete_text(textCursor - 1, textCursor);
+      rerunFiltersAndUpdate(o);
+    } else if (symbol === Clutter.KEY_l && control) {
+      includeLauncher = !includeLauncher;
       rerunFiltersAndUpdate(o);
     }
   });
@@ -378,13 +391,13 @@ function _showUI() {
   });
 
   grabs = containers.map((c) => {
-    let grab =  Main.pushModal(c, { actionMode: Shell.ActionMode.SYSTEM_MODAL });
+    let grab = Main.pushModal(c, { actionMode: Shell.ActionMode.SYSTEM_MODAL });
 
     c.connect('button-press-event', cleanUIWithFade);
     c.show();
-	  return grab;
+    return grab;
   });
-	grabs.push(Main.pushModal(boxLayout, { actionMode: Shell.ActionMode.SYSTEM_MODAL}))
+  grabs.push(Main.pushModal(boxLayout, { actionMode: Shell.ActionMode.SYSTEM_MODAL }))
   global.stage.set_key_focus(entry);
 
   let i = 0;
@@ -399,7 +412,7 @@ function _showUI() {
       util.fixWidths(box, width, shortcutWidth);
       i += 1;
       setTimeout(showSingleBox, 0);
-    } else if (!allWindowsShown){
+    } else if (!allWindowsShown) {
       timeit('all windows now shown')
       allWindowsShown = true;
       setTimeout(function () {
@@ -433,7 +446,7 @@ function _enable() {
 }
 
 function _disable() {
-	cleanUIWithFade(true);
+  cleanUIWithFade(true);
   Main.wm.removeKeybinding('show-switcher');
 }
 
@@ -455,7 +468,7 @@ function cleanUI() {
   switcherModule.setOnlyCurrentWorkspaceToggled(false);
   cleanBoxes();
   containers.reverse().forEach((c) => {
-    Main.uiGroup.remove_actor(c);
+    Main.uiGroup.remove_child(c);
   });
   grabs.reverse().forEach((c) => {
     Main.popModal(c);
@@ -482,7 +495,7 @@ function cleanUIWithFade(force_immediate = false) {
   const cleanRest = function () {
     cleanBoxes();
     containers.reverse().forEach((c) => {
-      Main.uiGroup.remove_actor(c);
+      Main.uiGroup.remove_child(c);
     });
     boxLayout.destroy();
     container = null;

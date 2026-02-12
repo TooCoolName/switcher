@@ -206,7 +206,7 @@ export var GnomeControlCenter = class GnomeControlCenter {
 
             // get the autostart setting for the dbus services
             // it's possible gnome control center does not have it specified
-            // though so we fallback to autoStart set to true
+            // though so we fallback to autoStart set to truer
             try {
               autoStart = keyFile.get_boolean(group, 'AutoStart');
             } catch (error) {

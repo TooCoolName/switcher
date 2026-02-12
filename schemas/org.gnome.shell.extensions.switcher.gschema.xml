@@ -97,5 +97,13 @@
           <default>false</default>
           <summary>Should names of executables be shown?</summary>
         </key>
+        <key type="b" name="search-all-apps">
+          <default>false</default>
+          <summary>Search all apps (include launcher)</summary>
+        </key>
+        <key type="as" name="window-replacements">
+          <default>[]</default>
+          <summary>List of strings to customize app names and descriptions. Format: "AppName,NewName,DescriptionRegex"</summary>
+        </key>
     </schema>
 </schemalist>

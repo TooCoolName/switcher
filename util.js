@@ -85,8 +85,8 @@ export function runFilter(app, fragment) {
     // matches at beginning word boundaries are better than in the middle of words
     const wordPrefixFactor =
       match.index == 0 ||
-      (match.index != 0 &&
-        [' ', '[', '('].includes(filteredDescription.charAt(match.index - 1)))
+        (match.index != 0 &&
+          [' ', '[', '('].includes(filteredDescription.charAt(match.index - 1)))
         ? 1.2
         : 0.0;
 
@@ -121,21 +121,21 @@ export function reinit() {
 }
 
 export function updateHighlight(boxes, query, cursor) {
-  boxes.forEach((box) => {
-    box.whole.remove_style_class_name('switcher-highlight');
-    box.label.remove_style_pseudo_class('selected');
+  // boxes.forEach((box) => {
+  //   box.whole.remove_style_class_name('switcher-highlight');
+  //   box.label.remove_style_pseudo_class('selected');
 
-    const highlightedText = highlightText(box.label.get_text(), query);
-    box.label.clutter_text.set_markup(highlightedText);
-  });
+  //   const highlightedText = highlightText(box.label.get_text(), query);
+  //   box.label.clutter_text.set_markup(highlightedText);
+  // });
 
-  if (boxes.length > cursor) {
-    boxes[cursor].whole.add_style_class_name('switcher-highlight');
-    if (latestHighLightedText !== boxes[cursor].label.text) {
-      boxes[cursor].label.add_style_pseudo_class('selected');
-    }
-    latestHighLightedText = boxes[cursor].label.text;
-  }
+  // if (boxes.length > cursor) {
+  //   boxes[cursor].whole.add_style_class_name('switcher-highlight');
+  //   if (latestHighLightedText !== boxes[cursor].label.text) {
+  //     boxes[cursor].label.add_style_pseudo_class('selected');
+  //   }
+  //   latestHighLightedText = boxes[cursor].label.text;
+  // }
 }
 
 export function highlightText(text, query) {
@@ -179,7 +179,7 @@ export function detachParent(child) {
   if (child) {
     let parent = child.get_parent();
     if (parent) {
-      parent.remove_actor(child);
+      parent.remove_child(child);
     }
   }
 }
