@@ -106,7 +106,8 @@ function _showUI() {
 
   const _windows = switcher.apps();
   const _includeLauncher = Convenience.getSettings().get_boolean('search-all-apps');
-  if (!_includeLauncher && _windows.filter(w => switcher.filter(w.app)).length === 0) {
+  const visibleWindows = _windows.filter(w => switcher.filter(w.app));
+  if (!_includeLauncher && visibleWindows.length <= 1) {
     return;
   }
   timeit('init');
@@ -202,7 +203,6 @@ function _showUI() {
   timeit('added actor');
 
   windows = switcher.apps();
-  // if (windows.length >= 2) cursor = 1; // Current window is removed, so 0 is the previous window
   windowApps = new Set();
   windows.forEach((window) => {
     const app = Shell.WindowTracker.get_default().get_window_app(window.app);

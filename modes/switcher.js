@@ -75,9 +75,6 @@ export var Switcher = (function () {
     updateReplacements();
     // Get all windows in activation order
     let tabList = global.display.get_tab_list(Meta.TabList.NORMAL, null);
-    if (tabList.length > 0) {
-      tabList.shift();
-    }
     return tabList.map(tab => ({ app: tab, mode: Switcher, activate }));
   };
 
