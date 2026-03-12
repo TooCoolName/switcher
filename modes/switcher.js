@@ -86,6 +86,7 @@ export var Switcher = (function () {
     const appRef = Shell.WindowTracker.get_default().get_window_app(app);
     let appName;
     let rawAppName;
+    let hideWindowTitle = false;
     try {
       rawAppName = appRef.get_name();
       appName = rawAppName.replace(/&/g, '&amp;');
@@ -103,14 +104,19 @@ export var Switcher = (function () {
       if (replacement.regex) {
         const match = windowTitle.match(replacement.regex);
         if (match && match.length > 1) {
-          windowTitle = match[1].trim();
+          const capturedTitle = match[1].trim();
+          if (capturedTitle === '') {
+            hideWindowTitle = true;
+          } else {
+            windowTitle = capturedTitle;
+          }
         }
       }
     }
 
-    const extras = modeUtils.getExtras(appRef)
-    if (appName == windowTitle && extras.length === 0) {
-      return appName
+    const extras = modeUtils.getExtras(appRef);
+    if (hideWindowTitle || appName == windowTitle) {
+      return extras.length === 0 ? appName : `${appName} ${extras}`;
     }
 
     return `${appName}  →  ${windowTitle} ${extras}`;
