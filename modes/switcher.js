@@ -100,15 +100,12 @@ export var Switcher = (function () {
     if (replacementsMap.has(rawAppName)) {
       let replacement = replacementsMap.get(rawAppName);
       appName = replacement.appName;
-        if (replacement.regex) {
-          const match = windowTitle.match(replacement.regex);
-          if (match && match.length > 1) {
-            const capturedTitle = match[1].trim();
-            if (capturedTitle.length > 0) {
-              windowTitle = capturedTitle;
-            }
-          }
+      if (replacement.regex) {
+        const match = windowTitle.match(replacement.regex);
+        if (match && match.length > 1) {
+          windowTitle = match[1].trim();
         }
+      }
     }
 
     const extras = modeUtils.getExtras(appRef)
