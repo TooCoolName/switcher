@@ -200,10 +200,12 @@ export function filterByText(apps, text) {
         ? b.mode.orderingNameParts(b.app)
         : [b.mode.description(b.app), ''];
 
-      const appNameComparison = aParts[0].localeCompare(bParts[0]);
+      const appNameComparison = (aParts[0] || '').localeCompare(
+        bParts[0] || ''
+      );
       if (appNameComparison != 0) return appNameComparison;
 
-      return aParts[1].localeCompare(bParts[1]);
+      return (aParts[1] || '').localeCompare(bParts[1] || '');
     });
   } else if (ordering == orderByRelevancy && text != '') {
     // Always preserve focus order before typing

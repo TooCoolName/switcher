@@ -97,7 +97,7 @@ export var Switcher = (function () {
       rawAppName = '';
     }
 
-    let windowTitle = app.get_title();
+    let windowTitle = app.get_title() || '';
 
     if (replacementsMap.has(rawAppName)) {
       let replacement = replacementsMap.get(rawAppName);
