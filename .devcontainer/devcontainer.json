@@ -1,0 +1,10 @@
+{
+	"image": "toocoolname/devcontainer-debian-ts-opencode:latest",
+	"runArgs": [
+		"--security-opt",
+		"seccomp=/etc/docker/seccomp_playwright.json"
+	],
+	"mounts": [
+		"source=switcher-opencode-share,target=/home/vscode/.local/share/opencode,type=volume"
+	]
+}
