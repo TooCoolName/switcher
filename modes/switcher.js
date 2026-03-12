@@ -40,7 +40,7 @@ export var Switcher = (function () {
               print('Invalid regex in switcher replacement: ' + p3);
             }
             replacementsMap.set(p1, {
-              appName: p2.replace(/&/g, '&amp;'),
+              appName: p2,
               regex: regex
             });
           }
@@ -83,6 +83,35 @@ export var Switcher = (function () {
     }));
   };
 
+
+  let orderingNameParts = function (app) {
+    const appRef = Shell.WindowTracker.get_default().get_window_app(app);
+    let appName;
+    let rawAppName;
+    try {
+      rawAppName = appRef.get_name();
+      appName = rawAppName;
+    } catch (e) {
+      print(e);
+      appName = 'Could not get name';
+      rawAppName = '';
+    }
+
+    let windowTitle = app.get_title();
+
+    if (replacementsMap.has(rawAppName)) {
+      let replacement = replacementsMap.get(rawAppName);
+      appName = replacement.appName;
+      if (replacement.regex) {
+        const match = windowTitle.match(replacement.regex);
+        if (match && match.length > 1) {
+          windowTitle = match[1].trim();
+        }
+      }
+    }
+
+    return [appName.toLowerCase(), windowTitle.toLowerCase()];
+  };
 
   let description = function (app) {
     const appRef = Shell.WindowTracker.get_default().get_window_app(app);
@@ -143,6 +172,7 @@ export var Switcher = (function () {
     MAX_NUM_ITEMS,
     name,
     apps,
+    orderingNameParts,
     filter,
     activate,
     description,

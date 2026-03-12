@@ -19,7 +19,7 @@
         </key>
         <key type="u" name="ordering">
             <default>0</default>
-            <summary>Ordering criteria: 0=Last focused, 1=Relevancy</summary>
+            <summary>Ordering criteria: 0=Last focused, 1=Relevancy, 2=Name</summary>
         </key>
         <key type="u" name="font-size">
             <default>32</default>

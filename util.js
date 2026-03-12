@@ -3,6 +3,7 @@ import * as Convenience from './convenience.js';
 
 const matchFuzzy = 1;
 const orderByRelevancy = 1;
+const orderByName = 2;
 
 // from https://github.com/satya164/gjs-helpers
 export var setTimeout = (f, ms) => {
@@ -189,9 +190,23 @@ export function filterByText(apps, text) {
     .filter((app) => app.mode.filter(app.app))
     .filter(makeFilter(text));
 
-  // Always preserve focus order before typing
   const ordering = Convenience.getSettings().get_uint('ordering');
-  if (ordering == orderByRelevancy && text != '') {
+  if (ordering == orderByName) {
+    filteredApps = filteredApps.sort(function (a, b) {
+      const aParts = a.mode.orderingNameParts
+        ? a.mode.orderingNameParts(a.app)
+        : [a.mode.description(a.app), ''];
+      const bParts = b.mode.orderingNameParts
+        ? b.mode.orderingNameParts(b.app)
+        : [b.mode.description(b.app), ''];
+
+      const appNameComparison = aParts[0].localeCompare(bParts[0]);
+      if (appNameComparison != 0) return appNameComparison;
+
+      return aParts[1].localeCompare(bParts[1]);
+    });
+  } else if (ordering == orderByRelevancy && text != '') {
+    // Always preserve focus order before typing
     filteredApps = filteredApps.sort(function (a, b) {
       if (a.app.score > b.app.score) return -1;
       if (a.app.score < b.app.score) return 1;

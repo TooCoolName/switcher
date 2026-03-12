@@ -240,7 +240,7 @@ function addMatching(widget, settings) {
 
 function addOrdering(widget, settings) {
   widget.append(makeTitle(_('Ordering criteria')));
-  let options = [_('Last focused'), _('Most relevant')];
+  let options = [_('Last focused'), _('Most relevant'), _('Name')];
   let input = new Gtk.ComboBoxText();
   input.set_margin_top(10);
   options.forEach((o) => input.append_text(o));

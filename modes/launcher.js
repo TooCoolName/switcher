@@ -52,6 +52,15 @@ export var Launcher = (function () {
     }
   };
 
+  let orderingNameParts = function (app) {
+    try {
+      return [app.get_name().toLowerCase(), ''];
+    } catch (e) {
+      print(e);
+      return ['could not get name', ''];
+    }
+  };
+
   let makeBox = function (appObj, index, onActivate, oldBox) {
     const app = appObj.app;
     return modeUtils.makeBox(
@@ -69,6 +78,7 @@ export var Launcher = (function () {
     MAX_NUM_ITEMS,
     name,
     apps,
+    orderingNameParts,
     filter: (x) => true,
     activate,
     description,
