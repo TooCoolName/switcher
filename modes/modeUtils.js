@@ -149,7 +149,7 @@ export var ModeUtils = (function () {
         style_class: 'switcher-label',
         y_align: Clutter.ActorAlign.CENTER
       });
-    label.clutter_text.set_text(description);
+    label.clutter_text.set_markup(util.highlightText(description, ''));
     label.set_x_expand(true);
     if (!oldBox.label) box.insert_child_at_index(label, 0);
 
@@ -197,12 +197,17 @@ export var ModeUtils = (function () {
     const activationCallbackId = whole.connect('clicked', activationCallback);
     if (!oldBox.whole) whole.set_child(box);
     whole.set_track_hover(true);
+    whole.remove_style_class_name('switcher-current-window');
+    if (appObj.isCurrentWindow) {
+      whole.add_style_class_name('switcher-current-window');
+    }
 
     return {
       whole: whole,
       iconBox: iconBox,
       shortcutBox: shortcutBox,
       label: label,
+      description: description,
       activationCallback: activationCallback,
       activationCallbackId: activationCallbackId
     };

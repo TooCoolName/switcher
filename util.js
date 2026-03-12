@@ -121,21 +121,21 @@ export function reinit() {
 }
 
 export function updateHighlight(boxes, query, cursor) {
-  // boxes.forEach((box) => {
-  //   box.whole.remove_style_class_name('switcher-highlight');
-  //   box.label.remove_style_pseudo_class('selected');
+  boxes.forEach((box) => {
+    box.whole.remove_style_class_name('switcher-highlight');
+    box.label.remove_style_pseudo_class('selected');
 
-  //   const highlightedText = highlightText(box.label.get_text(), query);
-  //   box.label.clutter_text.set_markup(highlightedText);
-  // });
+    const highlightedText = highlightText(box.description, query);
+    box.label.clutter_text.set_markup(highlightedText);
+  });
 
-  // if (boxes.length > cursor) {
-  //   boxes[cursor].whole.add_style_class_name('switcher-highlight');
-  //   if (latestHighLightedText !== boxes[cursor].label.text) {
-  //     boxes[cursor].label.add_style_pseudo_class('selected');
-  //   }
-  //   latestHighLightedText = boxes[cursor].label.text;
-  // }
+  if (boxes.length > cursor) {
+    boxes[cursor].whole.add_style_class_name('switcher-highlight');
+    boxes[cursor].label.add_style_pseudo_class('selected');
+    latestHighLightedText = boxes[cursor].description;
+  } else {
+    latestHighLightedText = null;
+  }
 }
 
 export function highlightText(text, query) {

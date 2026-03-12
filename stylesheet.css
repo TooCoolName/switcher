@@ -5,6 +5,7 @@
 
 .switcher-box {
   border-top: 2px solid rgba(54, 56, 58, 1);
+  transition-duration: 160ms;
 }
 
 .switcher-box:hover {
@@ -12,6 +13,26 @@
   border-top: 2px;
   border-style: solid;
   border-color: rgba(23, 25, 26, 0.95);
+}
+
+.switcher-highlight {
+  background-color: rgba(62, 104, 176, 0.38);
+}
+
+.switcher-highlight:hover {
+  background-color: rgba(74, 118, 196, 0.5);
+}
+
+.switcher-current-window {
+  background-color: rgba(101, 76, 38, 0.22);
+}
+
+.switcher-current-window:hover {
+  background-color: rgba(122, 92, 48, 0.3);
+}
+
+.switcher-current-window.switcher-highlight {
+  background-color: rgba(88, 102, 96, 0.62);
 }
 
 .switcher-box:last-child {
