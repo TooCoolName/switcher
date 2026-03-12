@@ -117,7 +117,7 @@ function _showUI() {
 
   previousEntryContent = '';
   initialHotkeyConsumed = false;
-  cursor = 0;
+  cursor = -1;
   util.reinit();
   boxes = [];
   currentlyShowingCount = 0;
@@ -225,10 +225,11 @@ function _showUI() {
     }
 
     updateBoxes(filteredApps);
-    // If there's less boxes then in previous cursor position,
-    // set cursor to the last box
-    if (cursor + 1 > currentlyShowingCount)
-      cursor = Math.max(currentlyShowingCount - 1, 0);
+    if (currentlyShowingCount === 0) {
+      cursor = -1;
+    } else if (cursor >= currentlyShowingCount) {
+      cursor = currentlyShowingCount - 1;
+    }
     util.updateHighlight(boxes, o.text, cursor);
   };
 
@@ -241,7 +242,7 @@ function _showUI() {
   const debouncedActivateUnique = util.debounce(() => {
     if (filteredApps.length === 1) {
       cleanUIWithFade();
-      filteredApps[cursor].activate(filteredApps[cursor].app);
+      filteredApps[0].activate(filteredApps[0].app);
     }
   }, Convenience.getSettings().get_uint('activate-after-ms'));
 
@@ -261,7 +262,8 @@ function _showUI() {
       symbol === Clutter.KEY_Tab ||
       (symbol === Clutter.KEY_n && control)
     ) {
-      cursor = cursor + 1 < currentlyShowingCount ? cursor + 1 : 0;
+      if (currentlyShowingCount > 0)
+        cursor = cursor < 0 || cursor + 1 >= currentlyShowingCount ? 0 : cursor + 1;
       util.updateHighlight(boxes, o.text, cursor);
     }
     // Previous entry
@@ -271,7 +273,8 @@ function _showUI() {
       (symbol === Clutter.KEY_Tab && shift) ||
       (symbol === Clutter.KEY_p && control)
     ) {
-      cursor = cursor > 0 ? cursor - 1 : currentlyShowingCount - 1;
+      if (currentlyShowingCount > 0)
+        cursor = cursor <= 0 ? currentlyShowingCount - 1 : cursor - 1;
       util.updateHighlight(boxes, o.text, cursor);
     } else if (symbol === Clutter.KEY_w && control) {
       switcherModule.setOnlyCurrentWorkspaceToggled(!switcherModule.onlyCurrentWorkspaceToggled)
@@ -332,7 +335,8 @@ function _showUI() {
     ) {
       let needCleanUI = true;
       if (filteredApps.length > 0) {
-        const selected = filteredApps[cursor];
+        const selectedIndex = cursor >= 0 ? cursor : 0;
+        const selected = filteredApps[selectedIndex];
         // If shift pressed and we are in switcher mode, bring the window in our current workspace.
         if (selected.mode.name() === 'Switcher' && shift)
           selected.app.change_workspace_by_index(
@@ -381,8 +385,8 @@ function _showUI() {
     }
     // Filter text
     else {
-      // Cursor starts from 1 to allow quick switching, but should revert back to 0 when text changes
-      cursor = 0;
+      // Reset selection when filter text changes.
+      cursor = -1;
       rerunFiltersAndUpdate(o);
     }
 

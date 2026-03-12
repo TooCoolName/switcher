@@ -130,7 +130,7 @@ export function updateHighlight(boxes, query, cursor) {
     box.label.clutter_text.set_markup(highlightedText);
   });
 
-  if (boxes.length > cursor) {
+  if (cursor >= 0 && boxes.length > cursor) {
     boxes[cursor].whole.add_style_class_name('switcher-highlight');
     boxes[cursor].label.add_style_pseudo_class('selected');
     latestHighLightedText = boxes[cursor].description;
